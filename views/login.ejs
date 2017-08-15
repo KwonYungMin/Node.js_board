@@ -1,0 +1,61 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+<title>포트폴리오</title>
+<link type="text/css" rel="stylesheet" href="/stylesheets/bootstrap.css" />
+<link type="text/css" rel="stylesheet" href="/stylesheets/bootstrap-datepicker.min.css" />
+<link type="text/css" rel="stylesheet" href="/stylesheets/common.css" />
+<link rel="stylesheet" type="text/css" href="/stylesheets/shCoreDefault.css" />
+<script type="text/javascript" src="/javascripts/jquery/jquery.js"></script>
+<script type="text/javascript" src="/javascripts/common.js"></script>
+
+
+<script type="text/javascript">
+function onClickLogin(){
+   var data = $('#loginForm').serializeObject();
+
+   console.log(data);
+
+   $.ajax({
+     url : "/users/login",
+     dataType : "json",
+     type : "POST",
+     data : data,
+     success : function(data, textStatus, jqXHR){
+       if($.common.ajaxValidate(data)){
+         location.href = data.redirectUrl;
+       } else {
+         alert('아이디 또는, 비밀번호가 틀렸습니다.');
+       }
+     },
+     error : function(){
+       alert('에러가 발생 했습니다.');
+     }
+   });
+}
+</script>
+</head>
+<body class="loginForm">
+	<div class="wrapper login">
+	    <div class="login-wrap">
+	        <span class="logo"></span>
+	        <span class="txt">통합 관리자에 오신 것을 환영합니다.</span>
+	        <div class="login-box-wrap">
+	          <fieldset class="login-box">
+	              <legend>Login Adminstrator</legend>
+	              <form id="loginForm" name="loginForm" >
+				      <input type="hidden" name="redirectUrl" value=""/>
+		              <ul class="login-input">
+		                  <li><span class="tit">아이디</span><input type="text" class="int required" name="userId" value=""  title="아이디"/></li>
+		                  <li><span class="tit">비밀번호</span><input type="password" class="int password required" name="password" title="패스워드"/></li>
+		              </ul>
+	             </form>
+	          </fieldset>
+	          <a href="#" class="btn-login" onclick="onClickLogin()">로그인</a>
+	        </div>
+	        <span class="copy-txt">Copyright ⓒ 2017 STUDY. All Rights Reserved.</span>
+	    </div>
+	</div>
+</body>
+</html>

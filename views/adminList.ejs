@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+
+<link rel="stylesheet" href="/stylesheets/bootstrap.css" />
+<link rel="stylesheet" href="/stylesheets/bootstrap-datepicker.min.css" />
+<link rel="stylesheet" href="/stylesheets/common.css" />
+<script type="text/javascript" src="/javascripts/jquery/jquery.js"></script>
+<script type="text/javascript" src="/javascripts/jquery/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/javascripts/jquery/jquery.form.min.js"></script>
+<script type="text/javascript" src="/javascripts/publ/placeholders.min.js"></script>
+<script type="text/javascript" src="/javascripts/publ/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="/javascripts/publ/bootstrap/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript" src="/javascripts/publ/syntaxHighlighter.min.js"></script>
+<script type="text/javascript" src="/javascripts/common.js"></script>
+<script type="text/javascript" src="/javascripts/jquery.splendid.textchange.js"></script>
+
+<style type="text/css">
+	.ellips-text{width:90%;overflow:hidden;white-space:nowrap;text-overflow:ellipsis;-o-text-overflow:ellipsis;-ms-text-overflow:ellipsis;-moz-binding:url(/xe/ellipsis.xml#ellipsis)}
+</style>
+
+<div class="row-header" id="headerNav">
+    <h1>STUDY</h1>
+    <!-- // gnb -->
+    <ul class="util-menu">
+        <li><span class="user-name"><%=sess_name%></span><span class="user-grade"></span></li>
+        <li><a href="/users/logout">로그아웃</a></li>
+    </ul>
+    <!-- // util-menu -->
+</div>
+
+<h1 class="page-tit">운영자관리</h1>
+
+<div class="search-set">
+	<strong class="tit">회원검색</strong>
+<!-- 	<form id="searchFrm" name="searchFrm" > -->
+	<select class="select" id="select-item" name="select-item">
+		<option value="all">전체</option>
+		<option value="name">이름</option>
+		<option value="id">아이디</option>
+	</select>
+
+    <input type="text" class="text" name="keyword" value="<%=keyword%>" />
+    <a href="#none" class="btn-type1" onclick="searchMember();">검색</a>
+    <span class="checkbox-w txt-1">
+		<label class="on"><input type="checkbox" name="except">탈퇴회원 제외</label>
+	</span>
+<!-- 	</form> -->
+</div>
+
+	<table class="tbl-1">
+		<colgroup>
+			<col style="width: 4%">
+			<col>
+			<col>
+			<col>
+			<col>
+			<col>
+			<col>
+			<col style="width: 8%">
+			<col style="width: 8%">
+		</colgroup>
+		<thead>
+			<tr>
+				<th><span class="checkbox-w"><label id="check-all"><input id="check-all" type="checkbox"></label></span></th>
+				<th><span>아이디 </span></th>
+				<th><span>이름</span></th>
+				<th><span>전화번호</span></th>
+				<th><span>휴대폰번호</span></th>
+				<th><span>이메일</span></th>
+				<th><span>등록일</span></th>
+				<th><span>수정일</span></th>
+			</tr>
+		</thead>
+		<tbody>
+
+
+      <%
+               for(var i=0; i<rows.length; i++)
+               {
+                  const memData = rows[i];
+									console.log(memData);
+
+      %>
+          <tr>
+            <td><span class="checkbox-w">
+              <label class="check-member" id="check-member">
+                <input class="checkbox-a" name="checkbox" type="checkbox" value="<%=memData.ADMIN_ID%>">
+              </label>
+            </span></td>
+            <td><%=memData.ADMIN_ID%></td>
+            <td><%=memData.ADMIN_NM%></td>
+            <td><%=memData.TEL_NO%></td>
+            <td><%=memData.MOBILE_NO%></td>
+            <td><a class="ellips-text" href="#" onclick="email_layer_open(this);"><%=memData.EMAIL%></a></td>
+            <td class="ellips-text"><%=memData.CRE_DT%></td>
+            <td class="ellips-text"><%=memData.MOD_DT%></td>
+          </tr>
+  <%
+        }
+  %>
+
+
+		</tbody>
+	</table>
+
+
+  <div class="form-wrap">
+		<div class="btn-wrap">
+			<a class="btn-type4" href="#" onclick="onClickDelete();">삭제</a>
+			<a class="btn-type4" href="#" onclick="onClickUpdate()">수정</a>
+			<a class="btn-type4" href="/board/adminForm" onclick="">등록</a>
+		</div>
+	</div>
+
+
+	<script type="text/javascript">
+
+
+
+		$(document).ready(function() {
+
+			onClickCheckbox();
+			enterSearch();
+		});
+
+
+		function enterSearch(){
+				$('input[name=keyword]').keypress(function(key){
+					if(key.which == 13){
+						searchMember();
+						console.log("enterSearch");
+					}
+				});
+			}
+
+			function searchMember() {
+		// 		var listSize = ${result.listSize};
+				var listSize = getElementValue('select[name=listSize]');
+				// 		var selectitem = $('#select-item').val();
+				var selectitem = getElementValue('#select-item');
+				var keyword = getElementValue('input[name=keyword]');
+
+				location.href = "/board/select?selectitem="+ selectitem + "&keyword=" + keyword;
+			}
+
+		function onClickCheckbox() {
+			$('.tbl-1 label').click(function() {
+
+				if ($(this).attr("id") == "check-all") {
+					onClickAllCheck($(this));
+				}
+
+				if ($(this).children('input').is(':checked')) {
+					$(this).addClass('on');
+				} else {
+					$(this).removeClass('on');
+				}
+			});
+		}
+
+		function onClickAllCheck(tempThis) {
+			if (tempThis.children('input').is(':checked')) {
+				console.log("checked1");
+				$(".check-member").addClass("on");
+				$(".checkbox-a").prop('checked', true);
+			} else {
+				console.log("checked2");
+				resetAllCheck();
+			}
+		}
+
+		function resetAllCheck() {
+				$(".check-member").removeClass('on');
+				$(".checkbox-a").prop('checked', false);
+			}
+
+
+	function onClickDelete() {
+		const result = confirm('정말 삭제 하시겠습니까?');
+
+		if (!result) {
+			return;
+		}
+
+		let data = {};
+
+		data.checkArray = getCheckValue();
+
+		let checkArray = data.checkArray.split(',');
+		let checkCnt = checkArray.length;
+
+		if(data.checkArray == ''){
+			checkCnt = 0;
+		}
+
+		console.log(data);
+		console.log("checkArray : "+checkArray.length);
+
+		if (checkCnt == 0) {
+			alert("선택한 대상이 없습니다.");
+			return;
+		}
+
+		$.ajax({
+					url : "/board/delete",
+					dataType : "json",
+					type : "POST",
+					data : data,
+					success : function(data, textStatus, jqXHR) {
+						if ($.common.ajaxValidate(data)) {
+							alert('삭제 성공');
+							//location.href = 'select?page=${result.page}&listSize=${result.listSize}';
+							location.href = '/board/list';
+						} else {
+							alert('삭제 실패');
+						}
+					},
+					error : function() {
+						alert('에러가 발생 했습니다.');
+					}
+				});
+
+	}
+
+	function onClickUpdate() {
+
+		let data = {};
+
+		data.checkArray = getCheckValue();
+
+		let checkArray = data.checkArray.split(',');
+		let checkCnt = checkArray.length;
+
+		if(data.checkArray == ''){
+			checkCnt = 0;
+		}
+
+		console.log(data.checkArray+" "+checkCnt);
+
+		if (checkCnt == 0) {
+			alert("선택한 대상이 없습니다.");
+			return;
+		} else if(checkCnt > 1){
+			alert("1명만 선택 하여야 합니다.");
+			return;
+		}
+
+		console.log(data);
+
+		location.href ="/board/update?id="+checkArray;
+
+	}
+
+function getCheckValue() {
+
+	//let checkboxValues = [];
+	let checkboxValues = "";
+
+
+	$('input[name=checkbox]:checked').each(function(i) {
+		checkboxValues += ""+$(this).val()+",";
+		//checkboxValues.push($(this).val());
+	});
+
+	checkboxValues = checkboxValues.slice(0, -1);
+
+
+	return checkboxValues;
+}
+	</script>

@@ -1,0 +1,267 @@
+<link rel="stylesheet" href="/stylesheets/bootstrap.css" />
+<link rel="stylesheet" href="/stylesheets/bootstrap-datepicker.min.css" />
+<link rel="stylesheet" href="/stylesheets/common.css" />
+<script type="text/javascript" src="/javascripts/jquery/jquery.js"></script>
+<script type="text/javascript" src="/javascripts/jquery/jquery-ui.min.js"></script>
+<script type="text/javascript" src="/javascripts/jquery/jquery.form.min.js"></script>
+<script type="text/javascript" src="/javascripts/publ/placeholders.min.js"></script>
+<script type="text/javascript" src="/javascripts/publ/bootstrap/bootstrap.min.js"></script>
+<script type="text/javascript" src="/javascripts/publ/bootstrap/bootstrap-datepicker.min.js"></script>
+<script type="text/javascript" src="/javascripts/publ/syntaxHighlighter.min.js"></script>
+<script type="text/javascript" src="/javascripts/common.js"></script>
+<script type="text/javascript" src="/javascripts/jquery.splendid.textchange.js"></script>
+
+<form id="frm"  name="frm" method="post">
+<input type="hidden" name="mode"  value="${mode }"/>
+
+<div class="tit-wrap-1">
+  <h2 class="tit-1">사용자 등록/수정</h2>
+  <table class="tbl-2">
+    <colgroup>
+      	<col width="15%"/>
+		<col width="35%"/>
+		<col width="15%"/>
+		<col width="35%"/>
+    </colgroup>
+    <tbody>
+      <%
+        if(mode == 'update'){
+          %>
+          <tr>
+            <th>아이디</th>
+            <td class="input-wrap">
+                <input readonly="readonly" value="<%=rows[0].ADMIN_ID%>" type="text"  name="ADMIN_ID"    maxlength="20"  class="text required"   title="아이디"/>
+                <input type="hidden" id="idChkYn"  value="Y"/>
+            </td>
+            <th>비밀번호</th>
+            <td class="input-wrap">
+            	<input type="password"  name="ADMIN_PWD"   value=""   maxlength="20"  class="text"  title="비밀번호"/>
+            </td>
+          </tr>
+
+
+          <tr>
+            <th>이름</th>
+            <td class="input-wrap">
+            	<input type="text"  name="ADMIN_NM"   value="<%=rows[0].ADMIN_NM%>"   maxlength="20"  class="text required" title="이름"/>
+            </td>
+            <th>조직명</th>
+            <td class="input-wrap">
+            	<input type="text"  name="ORG_NM"  value="<%=rows[0].ORG_NM%>"  maxlength="20" class="text"/>
+            </td>
+          </tr>
+
+          <tr>
+            <th>전화번호</th>
+            <td class="input-wrap">
+            	<input type="text"  name="TEL_NO"  value="<%=rows[0].TEL_NO%>"  maxlength="12" class="text onlynum" title="전화번호"/>
+            </td>
+            <th>휴대폰번호</th>
+            <td class="input-wrap">
+            	<input type="text"  name="MOBILE_NO"  value="<%=rows[0].MOBILE_NO%>"  maxlength="12" class="text onlynum" title="휴대폰 번호"/>
+            </td>
+          </tr>
+
+          <tr>
+            <th>email</th>
+            <td class="input-wrap" colspan="3">
+            	<input type="text"  name="EMAIL"  value="<%=rows[0].EMAIL%>"  maxlength="30" class="text required" title="email"/>
+            </td>
+          </tr>
+          <%
+        } else {
+          %>
+          <tr>
+            <th>아이디</th>
+            <td class="input-wrap">
+                <input type="text"  name="ADMIN_ID"    maxlength="20"  class="text required"   title="아이디"/>
+                <a href="javascript:;" onclick="adminIdChk();" class="btn-type1">중복체크</a>
+                <input type="hidden" id="idChkYn"  value="N"/>
+            </td>
+            <th>비밀번호</th>
+            <td class="input-wrap">
+            	<input type="password"  name="ADMIN_PWD"   value=""   maxlength="20"  class="text required"  title="비밀번호"/>
+            </td>
+          </tr>
+
+
+          <tr>
+            <th>이름</th>
+            <td class="input-wrap">
+            	<input type="text"  name="ADMIN_NM"   value=""   maxlength="20"  class="text required" title="이름"/>
+            </td>
+            <th>조직명</th>
+            <td class="input-wrap">
+            	<input type="text"  name="ORG_NM"  value=""  maxlength="20" class="text"/>
+            </td>
+          </tr>
+
+          <tr>
+            <th>전화번호</th>
+            <td class="input-wrap">
+            	<input type="text"  name="TEL_NO"  value=""  maxlength="12" class="text onlynum" title="전화번호"/>
+            </td>
+            <th>휴대폰번호</th>
+            <td class="input-wrap">
+            	<input type="text"  name="MOBILE_NO"  value=""  maxlength="12" class="text onlynum" title="휴대폰 번호"/>
+            </td>
+          </tr>
+
+          <tr>
+            <th>email</th>
+            <td class="input-wrap" colspan="3">
+            	<input type="text"  name="EMAIL"  value=""  maxlength="30" class="text required" title="email"/>
+            </td>
+          </tr>
+          <%
+        }
+      %>
+
+    </tbody>
+  </table>
+</div>
+</form>
+
+<div class="form-wrap">
+	<div class="btn-wrap">
+    <%
+    if(mode=='update'){
+      %>
+      <a class="btn-type4" href="#" onclick="adminUpdate();">저장</a>
+      <%
+    } else {
+      %>
+      <a class="btn-type4" href="#" onclick="adminSave();">저장</a>
+      <%
+    }
+
+    %>
+
+		<a class="btn-type4" href="/board/list">취소</a>
+	</div>
+</div>
+
+<script type="text/javascript">
+
+$(document).ready(function() {
+	changeTextId();
+});
+
+function adminSave(){
+		if(!$('#frm').validateForm()){ return false; }
+		console.log("idChkYn : "+$('#idChkYn').val());
+		if($('#idChkYn').val() === 'N') {
+			alert('아이디 중복 체크를 해주셔야 합니다.');
+			return false;
+		}
+      insertMember();
+	}
+
+  function adminUpdate(){
+  		if(!$('#frm').validateForm()){ return false; }
+      updateMember();
+  	}
+
+  function insertMember(){
+     var data = $('#frm').serializeObject();
+
+     console.log(data);
+
+     $.ajax({
+       url : "/board/insertMember",
+       dataType : "json",
+       type : "POST",
+       data : data,
+       success : function(data, textStatus, jqXHR){
+         if($.common.ajaxValidate(data)){
+           saveSuccess();
+           location.href = data.redirectUrl;
+         } else {
+           alert('중복되는 아이디 이거나, 알수 없는 오류가 발생 했습니다.');
+         }
+       },
+       error : function(){
+         alert('에러가 발생 했습니다.');
+       }
+     });
+  }
+
+  function updateMember(){
+     var data = $('#frm').serializeObject();
+
+     console.log(data);
+
+     $.ajax({
+       url : "/board/updateMember",
+       dataType : "json",
+       type : "POST",
+       data : data,
+       success : function(data, textStatus, jqXHR){
+         if($.common.ajaxValidate(data)){
+           saveSuccess();
+           location.href = data.redirectUrl;
+         } else {
+           alert('중복되는 아이디 이거나, 알수 없는 오류가 발생 했습니다.');
+         }
+       },
+       error : function(){
+         alert('에러가 발생 했습니다.');
+       }
+     });
+  }
+
+  function saveSuccess(){
+		alert('저장되었습니다. \n목록 페이지로 이동하겠습니다.');
+	}
+
+function adminIdChk(){
+    	if($('input[name=ADMIN_ID]').val() == ""){
+    		alert("[아이디]를 입력해 주세요.");
+    		return;
+    	}
+
+    	var data = $('#frm').serializeObject();
+
+    	$.ajax({
+    		url : "/board/idCheck",
+    		dataType : "json",
+    		type : "POST",
+    		data : data,
+    		success : function(data, textStatus, jqXHR){
+
+          console.log(data.rows);
+
+    			//resultCode가 100이면 $.common.ajaxValidate(data) = false가 된다. (common.js참조)
+    			if($.common.ajaxValidate(data)){
+    				callback(data);
+    			} else {
+    				alert('중복되는 아이디가 있습니다. 다시 입력해 주세요.');
+    			}
+    		},
+    		error : function(){
+    			alert('에러가 발생 했습니다. 페이지를 새로고침해 주세요.');
+    		}
+    	});
+	}
+
+    //id 중복 체크 성공시
+	function callback(data){
+		alert('사용가능한 아이디 입니다.');
+		$('#idChkYn').val('Y');
+	}
+
+  //text 실시간으로 입력 할때 마다 호출
+//jquery.splendid.textchange.js를 추가하여 사용 IE9, IE8도 사용가능
+function changeTextId(){
+  $('input[name=ADMIN_ID]').on('textchange', function(){
+    checkClear();
+  });
+}
+
+//id input의 text가 변경되면 중복 체크 안한걸로 변경
+function checkClear(){
+  console.log("idChkYn");
+  $('#idChkYn').val('N');
+}
+
+</script>
